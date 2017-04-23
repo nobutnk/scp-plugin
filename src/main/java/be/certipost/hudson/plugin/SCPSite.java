@@ -1,5 +1,27 @@
 package be.certipost.hudson.plugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpATTRS;
+import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.UserInfo;
+
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Util;
@@ -12,28 +34,7 @@ import hudson.model.Hudson.MasterComputer;
 import hudson.slaves.NodeProperty;
 import hudson.slaves.NodePropertyDescriptor;
 import hudson.util.DescribableList;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import hudson.util.FormValidation;
-import org.apache.commons.lang.StringUtils;
-
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpATTRS;
-import com.jcraft.jsch.SftpException;
-import com.jcraft.jsch.UserInfo;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  *
@@ -154,11 +155,12 @@ public class SCPSite extends AbstractDescribableImpl<SCPSite> {
         }
 
         UserInfo ui = new SCPUserInfo(password);
-        session.setUserInfo(ui);
+        session.setUserInfo(ui);        
 
-        java.util.Properties config = new java.util.Properties();
+        final Properties config = new Properties();
         config.put("StrictHostKeyChecking", "no");
         session.setConfig(config);
+
         session.connect();
 
         return session;
